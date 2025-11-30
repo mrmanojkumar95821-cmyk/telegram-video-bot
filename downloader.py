@@ -2,6 +2,9 @@ import os
 import yt_dlp
 from typing import Dict, Any
 
+# Path of cookies file
+COOKIES_FILE = "youtube_cookies.txt"
+
 PRESETS: Dict[str, str] = {
     "360p": "best[height<=360][ext=mp4]/best[height<=360]",
     "720p": "best[height<=720][ext=mp4]/best[height<=720]",
@@ -29,8 +32,15 @@ def download_video(url: str, preset_key: str) -> str:
         "outtmpl": output_template,
         "quiet": True,
         "no_warnings": True,
-        "noplaylist": True,  # Single video only
+        "noplaylist": True,
+        "merge_output_format": "mp4",
     }
+
+    # 🔥 ADD COOKIES SUPPORT
+    if os.path.exists(COOKIES_FILE):
+        ydl_opts["cookiefile"] = COOKIES_FILE
+    else:
+        print("⚠ WARNING: links may fail.")
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
